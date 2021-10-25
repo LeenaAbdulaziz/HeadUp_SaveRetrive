@@ -11,7 +11,7 @@ class DBHlpr(context: Context):SQLiteOpenHelper(context,"details",null,1) {
     var database:SQLiteDatabase=writableDatabase
     override fun onCreate(p0: SQLiteDatabase?) {
         if (p0 != null) {
-            p0.execSQL("create table celebebrity(_id integer primary key autoincrement,name text,taboo1 text,taboo2 text,taboo3 text)")
+            p0.execSQL("create table celebebrity(id integer primary key autoincrement,name text,taboo1 text,taboo2 text,taboo3 text)")
         }
     }
 
@@ -39,18 +39,36 @@ class DBHlpr(context: Context):SQLiteOpenHelper(context,"details",null,1) {
         var taboo1:String
         var taboo2:String
         var taboo3:String
+        var id:Int
        if(c.moveToFirst()){
            do{
 
+           id =c.getInt(c.getColumnIndex("id"))
            name =c.getString(c.getColumnIndex("name"))
            taboo1 =c.getString(c.getColumnIndex("taboo1"))
            taboo2 =c.getString(c.getColumnIndex("taboo2"))
            taboo3 =c.getString(c.getColumnIndex("taboo3"))
-               val celeb=Celebrity(name, taboo1, taboo2, taboo3)
+               val celeb=Celebrity(name, taboo1, taboo2, taboo3,id)
             noteList.add(celeb)
 
         }while(c.moveToNext())
        }
         return noteList
+    }
+
+    fun delete(celebrity: Celebrity) {
+        database.delete("celebebrity","id=${celebrity.id}", null)
+
+    }
+
+    fun update(celebrity: Celebrity){
+        val content=ContentValues()
+        content.put("name",celebrity.name)
+        content.put("taboo1",celebrity.taboo1)
+        content.put("taboo2",celebrity.taboo2)
+        content.put("taboo3",celebrity.taboo3)
+        content.put("id",celebrity.id)
+        database.update("celebebrity",content,"id=${celebrity.id}", null)
+
     }
     }
